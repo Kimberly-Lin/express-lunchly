@@ -56,6 +56,28 @@ class Customer {
     return new Customer(customer);
   }
 
+    /** get customers based on search term. */
+
+    static async find(term) {
+      console.log('term in class method', term)
+      const results = await db.query(
+        `SELECT id,
+            first_name AS "firstName",
+            last_name  AS "lastName",
+            phone,
+            notes
+          FROM customers
+          WHERE CONCAT_WS(' ', customers.first_name, customers.last_name) LIKE '%${term}%';`
+      );
+      console.log('results in class method',results)
+      const customers = results.rows;
+      console.log('customers in class method', customers)
+
+      return customers.map(customer => new Customer(customer));
+    }
+
+
+
   /** get all reservations for this customer. */
 
   async getReservations() {
