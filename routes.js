@@ -10,7 +10,7 @@ const Reservation = require("./models/reservation");
 const router = new express.Router();
 
 /** Homepage: show list of customers. */
-
+// could put conditional logic in this route to show search customers only
 router.get("/", async function (req, res, next) {
   const customers = await Customer.all();
   console.log("in solution routes file");
@@ -21,14 +21,19 @@ router.get("/", async function (req, res, next) {
 /** Search page: show list of customers. */
 
 router.get("/search", async function (req, res, next) {
-  const term = req.query.term
-  console.log('term', term)
+  const term = req.query.term;
+  console.log('term', term);
   const customers = await Customer.find(term);
-  console.log('customers',customers)
+  console.log('customers', customers);
   return res.render("customer_search.html", { customers });
 });
 
+/** Top 10 customers page */
 
+router.get("/best", async function (req, res, next) {
+  const customers = await Customer.best();
+  return res.render("best_customers.html", { customers });
+});
 
 /** Form to add a new customer. */
 

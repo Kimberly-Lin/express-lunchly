@@ -56,27 +56,47 @@ class Customer {
     return new Customer(customer);
   }
 
-    /** get customers based on search term. */
+  /** get customers based on search term. */
 
-    static async find(term) {
-      console.log('term in class method', term)
-      const results = await db.query(
-        `SELECT id,
+  static async find(term) {
+    console.log('term in class method', term);
+    const results = await db.query(
+      `SELECT id,
             first_name AS "firstName",
             last_name  AS "lastName",
             phone,
             notes
           FROM customers
-          WHERE CONCAT_WS(' ', customers.first_name, customers.last_name) LIKE '%${term}%';`
-      );
-      console.log('results in class method',results)
-      const customers = results.rows;
-      console.log('customers in class method', customers)
+          WHERE CONCAT(customers.first_name,' ', customers.last_name) ILIKE $1;`,
+      [`%${term}%`]
+    );
+    console.log('results in class method', results);
+    const customers = results.rows;
+    console.log('customers in class method', customers);
 
-      return customers.map(customer => new Customer(customer));
-    }
+    return customers.map(customer => new Customer(customer));
+  }
 
+  /** get top 10 customers with highest number of reservations. */
+  static async best() {
+    const results = await db.query(
+      `SELECT customers.id, 
+                first_name AS "firstName",
+                last_name  AS "lastName",
+                phone,
+                customers.notes,
+                COUNT(*) 
+      FROM customers 
+      JOIN reservations 
+      ON reservations.customer_id = customers.id
+      GROUP BY customers.id
+      ORDER BY COUNT(*) DESC
+      LIMIT 10`
+    )
+    const customers = results.rows;
 
+    return customers.map(customer => new Customer(customer));
+  }
 
   /** get all reservations for this customer. */
 
@@ -113,8 +133,9 @@ class Customer {
     }
   }
 
+  /** returns customer full name. */
   fullName() {
-    return `${this.firstName} ${this.lastName}`
+    return `${this.firstName} ${this.lastName}`;
   }
 
 }
