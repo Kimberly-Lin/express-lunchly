@@ -95,7 +95,7 @@ class Customer {
     )
     const customers = results.rows;
 
-    return customers.map(customer => new Customer(customer));
+    return customers.map(customer => new(customer));
   }
 
   /** get all reservations for this customer. */
