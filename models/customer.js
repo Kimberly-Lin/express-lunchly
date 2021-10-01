@@ -16,6 +16,10 @@ class Customer {
     this.notes = notes;
   }
 
+  get fullName() {
+    return `${this.firstName} ${this.lastName}`
+  }
+
   /** find all customers. */
 
   static async all() {
@@ -78,7 +82,7 @@ class Customer {
   }
 
   /** get top 10 customers with highest number of reservations. */
-  static async best() {
+  static async findBest() {
     const results = await db.query(
       `SELECT customers.id, 
                 first_name AS "firstName",
@@ -95,7 +99,7 @@ class Customer {
     )
     const customers = results.rows;
 
-    return customers.map(customer => new(customer));
+    return customers.map(customer => new Customer(customer));
   }
 
   /** get all reservations for this customer. */
@@ -132,12 +136,6 @@ class Customer {
       );
     }
   }
-
-  /** returns customer full name. */
-  fullName() {
-    return `${this.firstName} ${this.lastName}`;
-  }
-
 }
 
 module.exports = Customer;

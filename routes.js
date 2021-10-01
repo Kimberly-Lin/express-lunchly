@@ -31,7 +31,7 @@ router.get("/search", async function (req, res, next) {
 /** Top 10 customers page */
 
 router.get("/best", async function (req, res, next) {
-  const customers = await Customer.best();
+  const customers = await Customer.findBest();
   return res.render("best_customers.html", { customers });
 });
 
